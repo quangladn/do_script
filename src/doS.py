@@ -56,14 +56,15 @@ def out(argv_):
         pass
 
 def getInput(question,varName):
+    '''
+    question: string
+    '''
     value = '\"' + input(question) + '\"'
     varlist[varName] = value
 
 def getModule(moduleName):
     newCode = open(moduleName,'r').read()
     return newCode
-
-moduleName = []
 
 def LEX(code):
     '''
@@ -73,12 +74,16 @@ def LEX(code):
     code += '\n'
     codes = list(code)
     token = ''
+    token_ = ''
     tokens_ = []
     stateString = 0
     string = ''
     expr = ''
     varStarted = 0
     var = ''
+
+    stateString = 0
+    # run 
     for c in codes:
         token += c
         if token == '\n' or token == '\r' or token == '.end':
@@ -159,17 +164,10 @@ def LEX(code):
                     token = ''
                 stateString = 1
             elif stateString == 1:
-                if tokens_[-1] == '#import':
-                    string
-                    moduleName.append(string)
-                    string = ''
-                    stateString = 0
-                    token = ''
-                else:
-                    tokens_.append(string + '\"')
-                    string = ''
-                    stateString = 0
-                    token = ''
+                tokens_.append(string + '\"')
+                string = ''
+                stateString = 0
+                token = ''
         elif stateString == 1:
             string += token
             token = ''
@@ -194,48 +192,49 @@ def INIT_TOKEN(tok):
         i+=1 + length of argv - 1
     '''
     while i < len(tok):
-        # out 
-        if tok[i] == 'out':
-            value = tok[i+1]
-            tok_ = token('keyword','out',(value,'.end'))
-            tokens__.append(tok_)
-            i+=2
-        # variable 
-        elif tok[i][0] == '$' and tok[i+1] == 'equals':
-            varName = tok[i]
-            value = tok[i+2]
-            tok_ = token('keyword','var',(varName,value,'.end'))
-            tokens__.append(tok_)
-            i+=3
-        # input
-        elif tok[i] == 'input':
-            varName = tok[i+2]
-            question = tok[i+1]
-            tok_ = token('keyword','input',(question[1:-1] + ' ',varName,'.end'))
-            tokens__.append(tok_)
-            i+=3
-    
-        elif tok[i] == '#import':
-            for i in moduleName:
-                newCode = getModule(i)
-                toks += LEX(newCode)
-        # if 
-        elif tok[i] == 'if' and tok[i+4] == 'then':
-            operator = tok[i+2]
-            value1 = tok[i+1]
-            value2 = tok[i+3]
-            skipLine = tok[i+5]
-            tok_ = token('if','if',(value1,operator,value2,skipLine,'.end'))
-            tokens__.append(tok_)
-            i += 5
-        elif tok[i] == 'else' and tok[i+1] == 'then':
-            skipLine = tok[i+2]
-            tok_ = token('if','else',(skipLine,'.end'))
-            tokens__.append(tok_)
-            i += 3
-        elif tok[i] == 'endif':
-            i += 1
-        else:
+        try:
+            # out 
+            if tok[i] == 'out':
+                value = tok[i+1]
+                tok_ = token('keyword','out',(value,'.end'))
+                tokens__.append(tok_)
+                i+=2
+            # variable 
+            elif tok[i][0] == '$' and tok[i+1] == 'equals':
+                varName = tok[i]
+                value = tok[i+2]
+                tok_ = token('keyword','var',(varName,value,'.end'))
+                tokens__.append(tok_)
+                i+=3
+            # input
+            elif tok[i] == 'input':
+                varName = tok[i+2]
+                question = tok[i+1]
+                tok_ =token('keyword','input',(question[1:-1] + ' ',varName,'.end'))
+                tokens__.append(tok_)
+                i+=3
+
+            # if 
+            elif tok[i] == 'if' and tok[i+4] == 'then':
+                operator = tok[i+2]
+                value1 = tok[i+1]
+                value2 = tok[i+3]
+                skipLine = tok[i+5]
+                tok_ = token('if','if',(value1,operator,value2,skipLine,'.end'))
+                tokens__.append(tok_)
+                i += 5
+            elif tok[i] == 'else' and tok[i+1] == 'then':
+                skipLine = tok[i+2]
+                tok_ = token('if','else',(skipLine,'.end'))
+                tokens__.append(tok_)
+                i += 3
+            elif tok[i] == 'endif':
+                i += 1
+            else:
+                print(f'TokenErr: Token \'{tok[i]}\' not link more token')
+                i += 1
+        except IndexError:
+            print(f'TokenErr: Token \'{tok[i]}\' not link more token')
             i += 1
     return tokens__
 
