@@ -1,0 +1,2 @@
+$name = "quangladn"
+out $name
